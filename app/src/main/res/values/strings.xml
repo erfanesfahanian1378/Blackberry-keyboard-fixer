@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">KEY2 Keyboard Fixer</string>
+    <string name="ime_name">KEY2 Predictive Keyboard</string>
+    <string name="subtype_en_us">English (US)</string>
+    <string name="repo_url" translatable="false">https://github.com/erfanesfahanian1378/Blackberry-keyboard-fixer</string>
+
+    <!-- Accessibility service -->
+    <string name="a11y_label">KEY2 Keyboard Fixer</string>
+    <string name="a11y_summary">Next reel/short on keyboard swipe, Speed Key shortcuts, Convenience key actions.</string>
+    <string name="a11y_description">Fixes the BlackBerry KEY2 keyboard on LineageOS:\n\n• In the apps you choose (Instagram, YouTube, TikTok…), a swipe on the keyboard flips to the next or previous video instead of scrolling half way.\n• Speed Key (3×3 dots) + letter opens your shortcuts, like on BlackBerry\'s software.\n• Convenience key press, hold and double press run actions you pick.\n\nThe service watches key presses and keyboard swipes only to do this, reads which app is in front, and plays touch gestures. It does not collect or send any data.</string>
+
+    <!-- Main screen -->
+    <string name="section_setup">Setup</string>
+    <string name="setup_accessibility">1. Turn on the accessibility service</string>
+    <string name="setup_accessibility_on">Running</string>
+    <string name="setup_accessibility_off">Off. Tap, open \"KEY2 Keyboard Fixer\" and turn it on.</string>
+    <string name="setup_restricted">Switch greyed out?</string>
+    <string name="setup_restricted_summary">Android blocks accessibility for apps installed from an APK until you allow it: tap here → ⋮ (top right) → \"Allow restricted settings\", then try step 1 again.</string>
+    <string name="setup_keyboard">2. Choose the predictive keyboard</string>
+    <string name="setup_keyboard_current">KEY2 Predictive Keyboard is your keyboard</string>
+    <string name="setup_keyboard_enabled">Enabled but not selected. Tap to switch.</string>
+    <string name="setup_keyboard_off">Not enabled. Tap, turn on \"KEY2 Predictive Keyboard\", then come back and tap again to select it.</string>
+    <string name="setup_assistant">3. Stop the assistant popping up on the Convenience key</string>
+    <string name="setup_assistant_summary">LineageOS sends the Convenience key as an \"Assist\" key. Set Default apps → Digital assistant app to \"None\" or to \"KEY2 Keyboard Fixer\".</string>
+    <string name="setup_android_version">Android %1$s (API %2$d)</string>
+
+    <string name="section_reels">Reels, Shorts &amp; TikTok</string>
+    <string name="reels_explain">This ROM turns keyboard swipes into mouse-wheel scrolling, and video feeds don\'t snap to the next video on wheel scrolling. In the apps below a swipe on the keyboard becomes a real screen swipe: swipe up on the keyboard for the next video, down for the previous one. While you type (a text field is focused) the keyboard works normally.</string>
+    <string name="reels_enable">Next video on keyboard swipe</string>
+    <string name="reels_enable_summary">Needs Android 14 or newer and the accessibility service</string>
+    <string name="reels_apps">Apps</string>
+    <string name="reels_apps_summary">%1$d apps selected</string>
+    <string name="reels_apps_explain">Tap an app to switch it on or off. Keyboard swipes in checked apps become screen swipes; other apps keep the ROM\'s normal keyboard scrolling.</string>
+    <string name="reels_style">Swipe style</string>
+    <string name="reels_style_smart">Smart: one video per swipe on full-screen video feeds, normal drag elsewhere</string>
+    <string name="reels_style_page">Always flip one full page per swipe</string>
+    <string name="reels_style_drag">Always replay the swipe as a finger drag</string>
+    <string name="reels_horizontal">Left / right swipes too</string>
+    <string name="reels_horizontal_summary">Also turn sideways keyboard swipes into screen swipes</string>
+    <string name="swipe_distance">Swipe distance</string>
+    <string name="swipe_distance_value">%1$d (1 = short swipe is enough, 10 = long swipe needed)</string>
+    <string name="invert_direction">Reverse direction</string>
+    <string name="invert_direction_summary">Use if swipes go the wrong way on your ROM</string>
+    <string name="status_reels_needs_14">Keyboard swipe → next video needs Android 14 or newer.</string>
+    <string name="status_reels_active">Active in %1$s: keyboard swipes are screen swipes now.</string>
+    <string name="status_reels_idle">Not active right now (open a selected app to use it).</string>
+
+    <string name="section_speed">Speed Key (3×3 dots)</string>
+    <string name="speed_explain">Hold the Speed Key and press a letter to open the shortcut for that letter, from any app. Hold the letter longer for its second shortcut.</string>
+    <string name="speed_enable">Speed Key shortcuts</string>
+    <string name="speed_shortcuts">Letter shortcuts</string>
+    <string name="speed_shortcuts_summary">%1$d letters assigned</string>
+    <string name="speed_key_code">Which key is the Speed Key</string>
+    <string name="speed_tap_alone">When the Speed Key is tapped on its own</string>
+    <string name="speed_passthrough">Let the Speed Key through while typing</string>
+    <string name="speed_passthrough_summary">Turn on if your keyboard app uses it as Ctrl (e.g. K12KB). Shortcuts then only work outside text fields.</string>
+    <string name="shortcuts_explain">Speed Key + letter runs \"Press\". Speed Key + holding the letter runs \"Hold\".</string>
+    <string name="shortcut_letter">Speed Key + %1$c</string>
+    <string name="shortcut_unassigned">Not assigned</string>
+    <string name="shortcut_summary">Press: %1$s · Hold: %2$s</string>
+    <string name="shortcut_edit_press">Press</string>
+    <string name="shortcut_edit_hold">Hold</string>
+
+    <string name="section_convenience">Convenience key (side button)</string>
+    <string name="convenience_explain">The programmable button on the right side of the phone.</string>
+    <string name="convenience_enable">Convenience key actions</string>
+    <string name="convenience_press">Press</string>
+    <string name="convenience_hold">Hold</string>
+    <string name="convenience_double">Double press</string>
+    <string name="convenience_key_code">Which key is the Convenience key</string>
+
+    <string name="section_keyboard">Predictive keyboard</string>
+    <string name="keyboard_explain">Shows three word predictions above the keyboard, like BlackBerry. Swipe up from the left, middle or right part of the keyboard to insert that word. Typing itself is unchanged.</string>
+    <string name="ime_swipe_select">Swipe up to pick a word</string>
+    <string name="ime_swipe_select_summary">Left third → left word, middle → middle word, right → right word</string>
+    <string name="ime_horizontal">Left / right swipes while typing</string>
+    <string name="ime_horizontal_cursor">Move the cursor (hold Shift to select)</string>
+    <string name="ime_horizontal_delete">Swipe left deletes the last word</string>
+    <string name="ime_horizontal_off">Do nothing</string>
+    <string name="ime_next_word">Predict the next word</string>
+    <string name="ime_double_space">Double space types a period</string>
+    <string name="ime_learn">Learn new words</string>
+    <string name="ime_learn_summary">Stored only on this phone. Never in password or incognito fields.</string>
+    <string name="ime_forget">Forget learned words</string>
+    <string name="ime_forget_confirm">Delete every word and word pair the keyboard has learned?</string>
+    <string name="strip_hint">Swipe up on the keyboard to pick a word</string>
+
+    <string name="section_diagnostics">Diagnostics</string>
+    <string name="tester_title">Key &amp; keyboard-touch tester</string>
+    <string name="tester_summary">See the codes your keys send and the raw keyboard touch events</string>
+    <string name="tester_explain">Press keys or swipe on the keyboard. Nothing is remapped while this screen is open. Press Back to leave.</string>
+    <string name="tester_learn_speed">Press the Speed Key (3×3 dots) now…</string>
+    <string name="tester_learn_convenience">Press the Convenience key (side button) now…</string>
+    <string name="tester_learned">Saved: %1$s</string>
+    <string name="tester_touch_idle">Swipe on the keyboard to see touch events.</string>
+    <string name="tester_touch_info">device: %1$s\nrange: %2$s\nx=%3$.0f y=%4$.0f %5$s pointers=%6$d</string>
+    <string name="about_source">Help &amp; source code</string>
+    <string name="about_version">Version %1$s</string>
+    <string name="pick_app">Choose an app</string>
+
+    <!-- Actions -->
+    <string name="action_none">Do nothing</string>
+    <string name="action_open_app">Open an app…</string>
+    <string name="action_open_app_named">Open %1$s</string>
+    <string name="action_back">Back</string>
+    <string name="action_home">Home</string>
+    <string name="action_recents">Recent apps</string>
+    <string name="action_notifications">Notifications</string>
+    <string name="action_quick_settings">Quick settings</string>
+    <string name="action_power_menu">Power menu</string>
+    <string name="action_lock_screen">Lock screen</string>
+    <string name="action_screenshot">Screenshot</string>
+    <string name="action_split_screen">Split screen</string>
+    <string name="action_torch">Flashlight on/off</string>
+    <string name="action_camera">Camera</string>
+    <string name="action_assistant">Voice assistant</string>
+    <string name="action_media_play_pause">Play / pause music</string>
+    <string name="action_media_next">Next track</string>
+    <string name="action_media_previous">Previous track</string>
+    <string name="action_volume_panel">Volume panel</string>
+    <string name="action_toggle_reels">Turn keyboard-swipe video paging on/off</string>
+    <string name="action_open_settings">Open KEY2 Keyboard Fixer</string>
+
+    <!-- Toasts -->
+    <string name="toast_action_failed">That action did not work on this phone</string>
+    <string name="toast_needs_accessibility">Turn on the KEY2 Keyboard Fixer accessibility service for this action</string>
+    <string name="toast_app_missing">App not installed: %1$s</string>
+    <string name="toast_no_app_for_action">No app can do that</string>
+    <string name="toast_no_flash">No flashlight found</string>
+    <string name="toast_reels_on">Keyboard swipe → next video: on</string>
+    <string name="toast_reels_off">Keyboard swipe → next video: off</string>
+    <string name="toast_unassigned_letter">No shortcut for Speed Key + %1$c yet. Set one in KEY2 Keyboard Fixer.</string>
+</resources>
