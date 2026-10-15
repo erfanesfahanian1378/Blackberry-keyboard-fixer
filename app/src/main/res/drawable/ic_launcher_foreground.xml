@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 3x3 dots, like the KEY2 Speed Key, with an upward swipe arrow. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M40,46m-4.5,0a4.5,4.5 0,1 1,9 0a4.5,4.5 0,1 1,-9 0M54,46m-4.5,0a4.5,4.5 0,1 1,9 0a4.5,4.5 0,1 1,-9 0M68,46m-4.5,0a4.5,4.5 0,1 1,9 0a4.5,4.5 0,1 1,-9 0M40,60m-4.5,0a4.5,4.5 0,1 1,9 0a4.5,4.5 0,1 1,-9 0M54,60m-4.5,0a4.5,4.5 0,1 1,9 0a4.5,4.5 0,1 1,-9 0M68,60m-4.5,0a4.5,4.5 0,1 1,9 0a4.5,4.5 0,1 1,-9 0M40,74m-4.5,0a4.5,4.5 0,1 1,9 0a4.5,4.5 0,1 1,-9 0M54,74m-4.5,0a4.5,4.5 0,1 1,9 0a4.5,4.5 0,1 1,-9 0M68,74m-4.5,0a4.5,4.5 0,1 1,9 0a4.5,4.5 0,1 1,-9 0" />
+    <path
+        android:fillColor="#8AB4F8"
+        android:pathData="M54,24l-9,9h6v4h6v-4h6z" />
+</vector>
