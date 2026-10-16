@@ -30,11 +30,9 @@ I read the source of the KEY2 LineageOS builds ([device tree](https://github.com
 
 ## Install
 
-1. **Download the APK**
-   - From the repository's [**Actions**](../../actions) tab: open the latest green "Build APK" run, then **Artifacts → Key2KeyboardFixer-apk** (needs a GitHub login), or
-   - from [**Releases**](../../releases) if a version tag has been published.
-
-   Use `Key2KeyboardFixer.apk`. All builds are signed with the same key, so newer versions install over older ones and keep your settings.
+1. **Download the APK** on the phone: **[Key2KeyboardFixer.apk (latest release)](https://github.com/erfanesfahanian1378/Blackberry-keyboard-fixer/releases/latest/download/Key2KeyboardFixer.apk)**, then open it and allow your browser to "install unknown apps" when Android asks.
+   - All releases: [**Releases**](../../releases). Every build is also attached to its run in the [**Actions**](../../actions) tab (**Artifacts → Key2KeyboardFixer-apk**, needs a GitHub login).
+   - All builds are signed with the same key, so newer versions install over older ones and keep your settings.
 2. Open the app. The **Setup** section walks you through these steps:
    1. **Turn on the accessibility service** "KEY2 Keyboard Fixer".
       If the switch is greyed out ("restricted setting"): *Settings → Apps → KEY2 Keyboard Fixer → ⋮ → Allow restricted settings*, then try again. Android does this for every app installed from an APK file.
@@ -88,7 +86,7 @@ adb shell settings put secure accessibility_enabled 1
 ./gradlew testDebugUnitTest assembleRelease
 # APK: app/build/outputs/apk/release/app-release.apk
 ```
-Requirements: JDK 17 and the Android SDK (API 36). GitHub Actions builds and tests every push (`.github/workflows/build.yml`). Push a tag like `v1.0.0` to publish a Release with the APK attached.
+Requirements: JDK 17 and the Android SDK (API 36). GitHub Actions builds and tests every push (`.github/workflows/build.yml`). To publish a Release with the APK attached, push a tag like `v1.0.1`, or run the workflow manually (Actions → Build APK → Run workflow) and fill in "release_tag".
 
 The word list is generated with `tools/build_wordlist.py` from AOSP's `en_US_wordlist.combined.gz`.
 
