@@ -1,7 +1,6 @@
 package io.github.erfanesfahanian.key2fixer.ui
 
 import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import io.github.erfanesfahanian.key2fixer.keys.ConvenienceFallback
 
@@ -16,9 +15,14 @@ import io.github.erfanesfahanian.key2fixer.keys.ConvenienceFallback
 class AssistActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ConvenienceFallback.onSystemAssist(applicationContext, longPress = intent?.action == Intent.ACTION_VOICE_ASSIST)
+        ConvenienceFallback.onSystemAssist(applicationContext, longPress = intent?.action == ACTION_VOICE_ASSIST)
         finish()
         @Suppress("DEPRECATION")
         overridePendingTransition(0, 0)
+    }
+
+    companion object {
+        /** Intent.ACTION_VOICE_ASSIST is hidden from the SDK; this is the value the system sends. */
+        const val ACTION_VOICE_ASSIST = "android.intent.action.VOICE_ASSIST"
     }
 }
