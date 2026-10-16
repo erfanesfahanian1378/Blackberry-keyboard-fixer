@@ -25,8 +25,12 @@ sealed interface KeyAction {
     }
 }
 
-/** Actions that do not need an app picked. */
+/** Actions that do not need an app picked. Listed in this order in the action picker. */
 enum class BuiltinAction(val code: String) {
+    COPY("copy"),
+    CUT("cut"),
+    PASTE("paste"),
+    SELECT_ALL("select_all"),
     BACK("back"),
     HOME("home"),
     RECENTS("recents"),

@@ -21,8 +21,9 @@
     <string name="setup_keyboard_current">KEY2 Predictive Keyboard is your keyboard</string>
     <string name="setup_keyboard_enabled">Enabled but not selected. Tap to switch.</string>
     <string name="setup_keyboard_off">Not enabled. Tap, turn on \"KEY2 Predictive Keyboard\", then come back and tap again to select it.</string>
-    <string name="setup_assistant">3. Stop the assistant popping up on the Convenience key</string>
-    <string name="setup_assistant_summary">LineageOS sends the Convenience key as an \"Assist\" key. Set Default apps → Digital assistant app to \"None\" or to \"KEY2 Keyboard Fixer\".</string>
+    <string name="setup_assistant">3. Make KEY2 Keyboard Fixer the digital assistant</string>
+    <string name="setup_assistant_on">Done. Convenience key presses and holds reach the app.</string>
+    <string name="setup_assistant_off">Needed for the Convenience key: LineageOS turns it into an \"Assist\" key that only the digital assistant receives. Tap → Digital assistant app → KEY2 Keyboard Fixer.</string>
     <string name="setup_android_version">Android %1$s (API %2$d)</string>
 
     <string name="section_reels">Reels, Shorts &amp; TikTok</string>
@@ -55,7 +56,7 @@
     <string name="speed_tap_alone">When the Speed Key is tapped on its own</string>
     <string name="speed_passthrough">Let the Speed Key through while typing</string>
     <string name="speed_passthrough_summary">Turn on if your keyboard app uses it as Ctrl (e.g. K12KB). Shortcuts then only work outside text fields.</string>
-    <string name="shortcuts_explain">Speed Key + letter runs \"Press\". Speed Key + holding the letter runs \"Hold\".</string>
+    <string name="shortcuts_explain">Speed Key + letter runs \"Press\". Speed Key + holding the letter runs \"Hold\". By default, holding C, X, V or A copies, cuts, pastes or selects all text, like Ctrl on a computer.</string>
     <string name="shortcut_letter">Speed Key + %1$c</string>
     <string name="shortcut_unassigned">Not assigned</string>
     <string name="shortcut_summary">Press: %1$s · Hold: %2$s</string>
@@ -63,7 +64,13 @@
     <string name="shortcut_edit_hold">Hold</string>
 
     <string name="section_convenience">Convenience key (side button)</string>
-    <string name="convenience_explain">The programmable button on the right side of the phone.</string>
+    <string name="convenience_explain">The programmable button on the right side of the phone. LineageOS only hands it to the digital assistant, so set KEY2 Keyboard Fixer as the assistant (below).</string>
+    <string name="convenience_assistant">Digital assistant</string>
+    <string name="convenience_last_seen">Last press seen at %1$s, through %2$s.</string>
+    <string name="convenience_never_seen">No press seen yet. Press the Convenience key once, then come back here.</string>
+    <string name="route_key_event">the key itself</string>
+    <string name="route_assist_press">the assistant route (press)</string>
+    <string name="route_assist_hold">the assistant route (hold)</string>
     <string name="convenience_enable">Convenience key actions</string>
     <string name="convenience_press">Press</string>
     <string name="convenience_hold">Hold</string>
@@ -93,6 +100,7 @@
     <string name="tester_learn_speed">Press the Speed Key (3×3 dots) now…</string>
     <string name="tester_learn_convenience">Press the Convenience key (side button) now…</string>
     <string name="tester_learned">Saved: %1$s</string>
+    <string name="tester_convenience_assist">Convenience key received through %1$s. Your ROM delivers it only to the digital assistant; the app handles it that way.</string>
     <string name="tester_touch_idle">Swipe on the keyboard to see touch events.</string>
     <string name="tester_touch_info">device: %1$s\nrange: %2$s\nx=%3$.0f y=%4$.0f %5$s pointers=%6$d</string>
     <string name="about_source">Help &amp; source code</string>
@@ -103,6 +111,10 @@
     <string name="action_none">Do nothing</string>
     <string name="action_open_app">Open an app…</string>
     <string name="action_open_app_named">Open %1$s</string>
+    <string name="action_copy">Copy</string>
+    <string name="action_cut">Cut</string>
+    <string name="action_paste">Paste</string>
+    <string name="action_select_all">Select all</string>
     <string name="action_back">Back</string>
     <string name="action_home">Home</string>
     <string name="action_recents">Recent apps</string>
@@ -128,6 +140,7 @@
     <string name="toast_app_missing">App not installed: %1$s</string>
     <string name="toast_no_app_for_action">No app can do that</string>
     <string name="toast_no_flash">No flashlight found</string>
+    <string name="toast_no_text_field">No text field is selected</string>
     <string name="toast_reels_on">Keyboard swipe → next video: on</string>
     <string name="toast_reels_off">Keyboard swipe → next video: off</string>
     <string name="toast_unassigned_letter">No shortcut for Speed Key + %1$c yet. Set one in KEY2 Keyboard Fixer.</string>

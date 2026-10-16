@@ -47,7 +47,8 @@
             android:exported="false"
             android:windowSoftInputMode="stateAlwaysHidden" />
 
-        <!-- Selectable as the "digital assistant", so the Convenience (Assist) key lands here. -->
+        <!-- Selectable as the "digital assistant", so the Convenience (Assist) key lands here:
+             a press arrives as ASSIST, a long press as VOICE_ASSIST. -->
         <activity
             android:name=".ui.AssistActivity"
             android:excludeFromRecents="true"
@@ -57,6 +58,10 @@
             android:theme="@style/InvisibleTheme">
             <intent-filter>
                 <action android:name="android.intent.action.ASSIST" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VOICE_ASSIST" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

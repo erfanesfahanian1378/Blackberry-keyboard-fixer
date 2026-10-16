@@ -82,6 +82,21 @@ class KeyRouterTest {
     }
 
     @Test
+    fun holdOnlyLetterIgnoresShortTapAndRunsOnHold() {
+        val copy = KeyAction.Builtin(BuiltinAction.COPY)
+        val cfg = KeyConfig(letterHold = mapOf('C' to copy))
+        router.onKey(down(KeyCodes.SHIFT_RIGHT), cfg, false)
+        assertTrue(router.onKey(down(keyC), cfg, false))
+        assertTrue(router.onKey(up(keyC), cfg, false))
+        sched.advance(1000)
+        assertTrue("a short tap runs nothing and is not 'unassigned'", performed.isEmpty() && unassigned.isEmpty())
+        router.onKey(down(keyC), cfg, false)
+        sched.advance(500)
+        router.onKey(up(keyC), cfg, false)
+        assertEquals(listOf<KeyAction>(copy), performed)
+    }
+
+    @Test
     fun unassignedLetterIsReported() {
         router.onKey(down(KeyCodes.SHIFT_RIGHT), KeyConfig(), false)
         assertTrue(router.onKey(down(keyC), KeyConfig(), false))

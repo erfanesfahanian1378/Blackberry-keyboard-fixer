@@ -37,7 +37,7 @@ I read the source of the KEY2 LineageOS builds ([device tree](https://github.com
    1. **Turn on the accessibility service** "KEY2 Keyboard Fixer".
       If the switch is greyed out ("restricted setting"): *Settings → Apps → KEY2 Keyboard Fixer → ⋮ → Allow restricted settings*, then try again. Android does this for every app installed from an APK file.
    2. **Choose the predictive keyboard**: enable "KEY2 Predictive Keyboard" and select it. (Optional. Skip this if you only want the Reels and key fixes.)
-   3. **Default digital assistant → "None"** (or "KEY2 Keyboard Fixer"), so a press on the Convenience key doesn't also start Google Assistant / Gemini.
+   3. **Default digital assistant → "KEY2 Keyboard Fixer"** (*Settings → Apps → Default apps → Digital assistant app*). This is what makes the Convenience key work. See below for why.
 
 ADB alternative for step 2.1 (useful if your ROM hides the restricted-settings menu):
 ```sh
@@ -68,11 +68,14 @@ adb shell settings put secure accessibility_enabled 1
 
 ### Speed Key
 - Assign shortcuts under **Letter shortcuts** (press and hold for each of A–Z).
+- Defaults, like Ctrl on a computer: **Speed Key + hold C / X / V / A = Copy / Cut / Paste / Select all** in the focused text field. These four are also in the action list, so you can put them on any letter, the press or hold slot, or the Convenience key.
 - If your keyboard app uses the Speed Key as **Ctrl** (e.g. K12KB), turn on *Let the Speed Key through while typing*.
 - If nothing happens, use **Which key is the Speed Key** and press it once. The app learns the code your ROM sends.
 
 ### Convenience key
 - Default: press = flashlight, hold = camera. Change them, or add a double-press action.
+- **Make KEY2 Keyboard Fixer the digital assistant.** LineageOS maps the key to `ASSIST`, and on some builds the key event never reaches apps or accessibility services; even the key tester sees nothing. The system still reacts to it, though: a press launches the default digital assistant (`ACTION_ASSIST`) and a hold starts `ACTION_VOICE_ASSIST`. With this app as the assistant, both arrive here and run your actions. The main screen shows when and how the last press was seen.
+- Still nothing? Check whether the kernel reports the key at all: `adb shell getevent -l`, then press it. A line like `EV_KEY 0226 DOWN` (0x226 = 550) means the hardware works; no line means the ROM's kernel doesn't report it (please tell your ROM's maintainer).
 - Use **Which key is the Convenience key** if your ROM sends a different code.
 
 ### Diagnostics

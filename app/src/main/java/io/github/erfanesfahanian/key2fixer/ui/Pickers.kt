@@ -17,6 +17,7 @@ import android.widget.TextView
 import io.github.erfanesfahanian.key2fixer.R
 import io.github.erfanesfahanian.key2fixer.keys.BuiltinAction
 import io.github.erfanesfahanian.key2fixer.keys.KeyAction
+import io.github.erfanesfahanian.key2fixer.util.Diagnostics
 import java.util.concurrent.Executors
 
 /** An installed app that can be launched. */
@@ -50,6 +51,10 @@ object Apps {
 
 fun builtinLabel(context: Context, kind: BuiltinAction): String = context.getString(
     when (kind) {
+        BuiltinAction.COPY -> R.string.action_copy
+        BuiltinAction.CUT -> R.string.action_cut
+        BuiltinAction.PASTE -> R.string.action_paste
+        BuiltinAction.SELECT_ALL -> R.string.action_select_all
         BuiltinAction.BACK -> R.string.action_back
         BuiltinAction.HOME -> R.string.action_home
         BuiltinAction.RECENTS -> R.string.action_recents
@@ -68,6 +73,14 @@ fun builtinLabel(context: Context, kind: BuiltinAction): String = context.getStr
         BuiltinAction.VOLUME_PANEL -> R.string.action_volume_panel
         BuiltinAction.TOGGLE_REELS -> R.string.action_toggle_reels
         BuiltinAction.OPEN_SETTINGS -> R.string.action_open_settings
+    },
+)
+
+fun routeLabel(context: Context, route: Diagnostics.ConvenienceRoute): String = context.getString(
+    when (route) {
+        Diagnostics.ConvenienceRoute.KEY_EVENT -> R.string.route_key_event
+        Diagnostics.ConvenienceRoute.ASSIST_PRESS -> R.string.route_assist_press
+        Diagnostics.ConvenienceRoute.ASSIST_HOLD -> R.string.route_assist_hold
     },
 )
 

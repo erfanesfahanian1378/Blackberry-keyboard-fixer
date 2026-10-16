@@ -30,6 +30,7 @@ class KeyTesterActivity : Activity() {
     private var learn: String? = null
     private val geometry = TouchpadGeometry()
     private val classifier = SwipeClassifier()
+    private var seenSightings = Diagnostics.convenienceSightings
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,14 +63,32 @@ class KeyTesterActivity : Activity() {
         touchInfo.text = getString(R.string.tester_touch_idle)
     }
 
-    override fun onResume() {
-        super.onResume()
+    // Start/stop rather than resume/pause: the invisible assistant screen opens on top of this
+    // one when the Convenience key is pressed, and remapping must stay paused meanwhile.
+    override fun onStart() {
+        super.onStart()
         Diagnostics.keyTesterActive = true
     }
 
-    override fun onPause() {
+    override fun onStop() {
         Diagnostics.keyTesterActive = false
-        super.onPause()
+        super.onStop()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // The Convenience key may only arrive through the assistant route (no key event).
+        if (Diagnostics.convenienceSightings != seenSightings) {
+            seenSightings = Diagnostics.convenienceSightings
+            val route = Diagnostics.lastConvenienceRoute
+            if (route != null && route != Diagnostics.ConvenienceRoute.KEY_EVENT) {
+                add(getString(R.string.tester_convenience_assist, routeLabel(this, route)))
+                if (learn == LEARN_CONVENIENCE) {
+                    learn = null
+                    updateHeader()
+                }
+            }
+        }
     }
 
     private fun updateHeader() {

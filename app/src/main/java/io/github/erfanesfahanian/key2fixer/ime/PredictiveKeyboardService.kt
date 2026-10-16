@@ -82,9 +82,11 @@ class PredictiveKeyboardService : InputMethodService() {
                 Log.e(TAG, "Could not load the word list", e)
             }
         }
+        instance = this
     }
 
     override fun onDestroy() {
+        if (instance === this) instance = null
         handler.removeCallbacksAndMessages(null)
         prefs.sp.unregisterOnSharedPreferenceChangeListener(prefListener)
         io.execute { runCatching { userDict.save() } }
@@ -379,7 +381,21 @@ class PredictiveKeyboardService : InputMethodService() {
         gesture = Gesture.NONE
     }
 
+    /** Runs a text-field context-menu action (copy, cut, paste, select all) on the focused editor. */
+    private fun performContextMenuAction(id: Int): Boolean {
+        val info = currentInputEditorInfo ?: return false
+        if (info.inputType == InputType.TYPE_NULL) return false
+        val ic = currentInputConnection ?: return false
+        return ic.performContextMenuAction(id)
+    }
+
     companion object {
+        @Volatile
+        private var instance: PredictiveKeyboardService? = null
+
+        /** Copy/cut/paste/select all through this keyboard, if it is active in a text field. */
+        fun performEdit(menuId: Int): Boolean = instance?.performContextMenuAction(menuId) == true
+
         private const val TAG = "Key2FixerIME"
         private const val WORD_LIST = "dict/en_US.txt"
         private const val DOUBLE_SPACE_MILLIS = 700L
