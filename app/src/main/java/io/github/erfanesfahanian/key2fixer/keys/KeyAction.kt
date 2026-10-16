@@ -31,6 +31,7 @@ enum class BuiltinAction(val code: String) {
     CUT("cut"),
     PASTE("paste"),
     SELECT_ALL("select_all"),
+    CLIPBOARD("clipboard"),
     BACK("back"),
     HOME("home"),
     RECENTS("recents"),

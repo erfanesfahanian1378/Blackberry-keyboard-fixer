@@ -1,5 +1,6 @@
 package io.github.erfanesfahanian.key2fixer.ime
 
+import android.content.ClipboardManager
 import android.content.SharedPreferences
 import android.inputmethodservice.InputMethodService
 import android.os.Handler
@@ -7,12 +8,18 @@ import android.os.Looper
 import android.os.SystemClock
 import android.text.InputType
 import android.util.Log
+import android.util.TypedValue
+import android.view.Gravity
 import android.view.KeyCharacterMap
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
+import android.widget.LinearLayout
+import android.widget.TextView
+import io.github.erfanesfahanian.key2fixer.R
 import io.github.erfanesfahanian.key2fixer.gesture.StepAccumulator
 import io.github.erfanesfahanian.key2fixer.gesture.SwipeClassifier
 import io.github.erfanesfahanian.key2fixer.gesture.SwipeDirection
@@ -32,8 +39,11 @@ import kotlin.math.abs
  * app, so Alt/Shift/Sym behave exactly as before. The keyboard only adds the three-word bar and
  * reads swipes on the keyboard surface (the "touch_keypad" device, SOURCE_TOUCHPAD), which reach
  * the active input method before the app turns them into scrolling.
+ *
+ * It also keeps a clipboard history (the active keyboard is the only app Android lets read the
+ * clipboard in the background), opened with the 📋 button or Speed Key + V.
  */
-class PredictiveKeyboardService : InputMethodService() {
+class PredictiveKeyboardService : InputMethodService(), ClipboardPanelView.Listener {
     private val handler = Handler(Looper.getMainLooper())
     private val io = Executors.newSingleThreadExecutor()
     private lateinit var prefs: Prefs
@@ -42,7 +52,18 @@ class PredictiveKeyboardService : InputMethodService() {
     @Volatile
     private var predictor: WordPredictor? = null
     private var strip: SuggestionStripView? = null
+    private var stripRow: View? = null
     private var suggestions: List<String> = emptyList()
+
+    // Clipboard history
+    private lateinit var clipboard: ClipboardHistory
+    private var panel: ClipboardPanelView? = null
+    private var clipboardOpen = false
+    /** The keyboard window was hidden and only shown to display the panel. */
+    private var shownForPanel = false
+    private var backConsumed = false
+    private val clipListener = ClipboardManager.OnPrimaryClipChangedListener { captureClip() }
+    private val saveClips = Runnable { io.execute { runCatching { clipboard.save() } } }
 
     /** The focused editor is a normal text field that may show predictions. */
     private var active = false
@@ -63,7 +84,13 @@ class PredictiveKeyboardService : InputMethodService() {
 
     private val refresh = Runnable { refreshSuggestions() }
     private val prefListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-        if (key == Prefs.KEY_FORGET) io.execute { userDict.clear(); runCatching { userDict.save() } }
+        when {
+            key == Prefs.KEY_FORGET -> io.execute { userDict.clear(); runCatching { userDict.save() } }
+            key == Prefs.KEY_CLEAR_CLIPBOARD || (key == Prefs.KEY_CLIPBOARD_ENABLED && !prefs.clipboardEnabled) -> {
+                io.execute { clipboard.clearAll(); runCatching { clipboard.save() } }
+                handler.post { applyPanelState() }
+            }
+        }
     }
     private val save = Runnable { io.execute { runCatching { userDict.save() } } }
 
@@ -71,8 +98,11 @@ class PredictiveKeyboardService : InputMethodService() {
         super.onCreate()
         prefs = Prefs(this)
         userDict = UserDictionary(File(filesDir, Prefs.USER_WORDS_FILE))
+        clipboard = ClipboardHistory(File(filesDir, Prefs.CLIPBOARD_FILE))
         prefs.sp.registerOnSharedPreferenceChangeListener(prefListener)
+        getSystemService(ClipboardManager::class.java)?.addPrimaryClipChangedListener(clipListener)
         io.execute {
+            runCatching { clipboard.load() }
             try {
                 userDict.load()
                 val words = assets.open(WORD_LIST).bufferedReader().use { WordPredictor.parseWordList(it) }
@@ -89,23 +119,52 @@ class PredictiveKeyboardService : InputMethodService() {
         if (instance === this) instance = null
         handler.removeCallbacksAndMessages(null)
         prefs.sp.unregisterOnSharedPreferenceChangeListener(prefListener)
+        getSystemService(ClipboardManager::class.java)?.removePrimaryClipChangedListener(clipListener)
         io.execute { runCatching { userDict.save() } }
+        io.execute { runCatching { clipboard.save() } }
         io.shutdown()
         super.onDestroy()
     }
 
-    override fun onCreateInputView(): View =
-        SuggestionStripView(this).also { view ->
+    /** [clipboard panel, hidden until opened] above [word bar | 📋]. */
+    override fun onCreateInputView(): View {
+        val colors = ImeColors(this)
+        val bar = SuggestionStripView(this).also { view ->
             view.onPick = { slot -> pickSlot(slot) }
             view.setSuggestions(suggestions)
             strip = view
         }
+        val clipButton = TextView(this).apply {
+            text = "📋"
+            gravity = Gravity.CENTER
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
+            setBackgroundColor(colors.background)
+            contentDescription = getString(R.string.clipboard_title)
+            setOnClickListener { toggleClipboardPanel() }
+        }
+        val row = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            addView(bar, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+            val width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 44f, resources.displayMetrics).toInt()
+            addView(clipButton, LinearLayout.LayoutParams(width, ViewGroup.LayoutParams.MATCH_PARENT))
+        }
+        val clipPanel = ClipboardPanelView(this, this)
+        stripRow = row
+        panel = clipPanel
+        val root = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            addView(clipPanel, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+            addView(row, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+        }
+        applyPanelState()
+        return root
+    }
 
     // The bar is the whole "keyboard", so show it even though a hardware keyboard is present.
-    override fun onEvaluateInputViewShown(): Boolean = active || super.onEvaluateInputViewShown()
+    override fun onEvaluateInputViewShown(): Boolean = active || clipboardOpen || super.onEvaluateInputViewShown()
 
     override fun onShowInputRequested(flags: Int, configChange: Boolean): Boolean =
-        active || super.onShowInputRequested(flags, configChange)
+        active || clipboardOpen || super.onShowInputRequested(flags, configChange)
 
     override fun onEvaluateFullscreenMode(): Boolean = false
 
@@ -114,6 +173,9 @@ class PredictiveKeyboardService : InputMethodService() {
         active = isPredictable(attribute)
         learnAllowed = active && (attribute.imeOptions and EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING) == 0
         if (!restarting) showRequested = false
+        clipboardOpen = false
+        shownForPanel = false
+        applyPanelState()
         resetGesture()
         scheduleRefresh()
     }
@@ -123,9 +185,21 @@ class PredictiveKeyboardService : InputMethodService() {
         scheduleRefresh()
     }
 
+    override fun onFinishInputView(finishingInput: Boolean) {
+        super.onFinishInputView(finishingInput)
+        // The window was hidden (Back, the app, or a new field): start closed next time.
+        if (clipboardOpen) {
+            clipboardOpen = false
+            shownForPanel = false
+            applyPanelState()
+        }
+    }
+
     override fun onFinishInput() {
         super.onFinishInput()
         active = false
+        clipboardOpen = false
+        applyPanelState()
         suggestions = emptyList()
         strip?.setSuggestions(suggestions)
         resetGesture()
@@ -160,6 +234,15 @@ class PredictiveKeyboardService : InputMethodService() {
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         if (keyCode == KeyEvent.KEYCODE_SHIFT_LEFT || keyCode == KeyEvent.KEYCODE_SHIFT_RIGHT) shiftHeld = true
+        if (clipboardOpen) {
+            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                // Back closes the clipboard panel first, like any keyboard popup.
+                if (event.repeatCount == 0) closeClipboardPanel()
+                backConsumed = true
+                return true
+            }
+            if (event.isPrintingKey) closeClipboardPanel() // typing goes on as usual
+        }
         // Pressing a key means the finger on the keyboard surface is typing, not swiping.
         if (classifier.isActive) {
             classifier.cancel()
@@ -186,6 +269,10 @@ class PredictiveKeyboardService : InputMethodService() {
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
         if (keyCode == KeyEvent.KEYCODE_SHIFT_LEFT || keyCode == KeyEvent.KEYCODE_SHIFT_RIGHT) shiftHeld = false
+        if (keyCode == KeyEvent.KEYCODE_BACK && backConsumed) {
+            backConsumed = false
+            return true
+        }
         return super.onKeyUp(keyCode, event)
     }
 
@@ -283,7 +370,7 @@ class PredictiveKeyboardService : InputMethodService() {
     // ------------------------------------------------------------------ keyboard surface swipes
 
     override fun onGenericMotionEvent(event: MotionEvent): Boolean {
-        if (!active || Diagnostics.keyTesterActive || !TouchpadGeometry.isKeyboardTouch(event)) {
+        if (!active || clipboardOpen || Diagnostics.keyTesterActive || !TouchpadGeometry.isKeyboardTouch(event)) {
             return super.onGenericMotionEvent(event)
         }
         val selectOn = prefs.imeSwipeSelect && isInputViewShown
@@ -381,6 +468,92 @@ class PredictiveKeyboardService : InputMethodService() {
         gesture = Gesture.NONE
     }
 
+    // ------------------------------------------------------------------ clipboard history
+
+    /** Records the current clip. Called whenever anything is copied while this is the keyboard. */
+    private fun captureClip() {
+        if (!::clipboard.isInitialized || !prefs.clipboardEnabled) return
+        val cm = getSystemService(ClipboardManager::class.java) ?: return
+        val clip = try {
+            cm.primaryClip
+        } catch (e: SecurityException) {
+            null
+        } ?: return
+        // Password managers mark copied passwords as sensitive; never keep those.
+        if (clip.description?.extras?.getBoolean(EXTRA_IS_SENSITIVE) == true) return
+        if (clip.itemCount == 0) return
+        val item = clip.getItemAt(0)
+        val text = item.text ?: if (item.htmlText != null) item.coerceToText(this) else null
+        if (text.isNullOrEmpty()) return
+        if (clipboard.add(text.toString(), System.currentTimeMillis())) {
+            handler.removeCallbacks(saveClips)
+            handler.postDelayed(saveClips, 1500)
+            if (clipboardOpen) applyPanelState()
+        }
+    }
+
+    private fun hasTextField(): Boolean {
+        val info = currentInputEditorInfo ?: return false
+        return info.inputType != InputType.TYPE_NULL && currentInputConnection != null
+    }
+
+    /** Opens or closes the panel. Returns false if no text field is focused. */
+    private fun toggleClipboardPanel(): Boolean {
+        if (clipboardOpen) {
+            closeClipboardPanel()
+            return true
+        }
+        if (!hasTextField()) return false
+        captureClip() // in case something was copied before this keyboard started
+        clipboardOpen = true
+        shownForPanel = !isInputViewShown
+        applyPanelState()
+        if (shownForPanel) requestShowSelf(0) else updateInputViewShown()
+        return true
+    }
+
+    private fun closeClipboardPanel() {
+        if (!clipboardOpen) return
+        clipboardOpen = false
+        applyPanelState()
+        // If the window only appeared for the panel (e.g. a URL bar without a word bar), hide it again.
+        if (shownForPanel && !active) requestHideSelf(0)
+        shownForPanel = false
+    }
+
+    /** Panel visible only while open; the word bar row is unchanged otherwise. */
+    private fun applyPanelState() {
+        val p = panel ?: return
+        p.visibility = if (clipboardOpen) View.VISIBLE else View.GONE
+        if (clipboardOpen) p.show(clipboard.items(), prefs.clipboardEnabled)
+        stripRow?.visibility = if (active || !clipboardOpen) View.VISIBLE else View.GONE
+    }
+
+    override fun onPasteClip(text: String) {
+        currentInputConnection?.commitText(text, 1)
+        closeClipboardPanel()
+    }
+
+    override fun onTogglePin(text: String) {
+        clipboard.togglePin(text)
+        handler.post(saveClips)
+        applyPanelState()
+    }
+
+    override fun onDeleteClip(text: String) {
+        clipboard.remove(text)
+        handler.post(saveClips)
+        applyPanelState()
+    }
+
+    override fun onClearClips() {
+        clipboard.clearUnpinned()
+        handler.post(saveClips)
+        applyPanelState()
+    }
+
+    override fun onCloseClipboard() = closeClipboardPanel()
+
     /** Runs a text-field context-menu action (copy, cut, paste, select all) on the focused editor. */
     private fun performContextMenuAction(id: Int): Boolean {
         val info = currentInputEditorInfo ?: return false
@@ -395,6 +568,12 @@ class PredictiveKeyboardService : InputMethodService() {
 
         /** Copy/cut/paste/select all through this keyboard, if it is active in a text field. */
         fun performEdit(menuId: Int): Boolean = instance?.performContextMenuAction(menuId) == true
+
+        /** Opens or closes the clipboard panel. False if this keyboard is not in a text field. */
+        fun toggleClipboard(): Boolean = instance?.toggleClipboardPanel() == true
+
+        /** ClipDescription.EXTRA_IS_SENSITIVE (API 33), used by password managers since earlier. */
+        private const val EXTRA_IS_SENSITIVE = "android.content.extra.IS_SENSITIVE"
 
         private const val TAG = "Key2FixerIME"
         private const val WORD_LIST = "dict/en_US.txt"

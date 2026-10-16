@@ -58,7 +58,10 @@ class Prefs(context: Context) {
 
     fun letterAction(letter: Char, hold: Boolean): KeyAction {
         val key = letterKey(letter, hold)
-        if (!sp.contains(key)) return if (hold) DEFAULT_LETTER_HOLD[letter.uppercaseChar()] ?: KeyAction.None else KeyAction.None
+        if (!sp.contains(key)) {
+            val defaults = if (hold) DEFAULT_LETTER_HOLD else DEFAULT_LETTER_TAP
+            return defaults[letter.uppercaseChar()] ?: KeyAction.None
+        }
         return KeyAction.decode(sp.getString(key, null))
     }
 
@@ -117,6 +120,17 @@ class Prefs(context: Context) {
         get() = sp.getBoolean("ime_next_word", true)
         set(v) = sp.edit().putBoolean("ime_next_word", v).apply()
 
+    // --- Clipboard history ---
+    var clipboardEnabled: Boolean
+        get() = sp.getBoolean(KEY_CLIPBOARD_ENABLED, true)
+        set(v) = sp.edit().putBoolean(KEY_CLIPBOARD_ENABLED, v).apply()
+
+    /** Deletes the clipboard history file and tells a running keyboard to drop its copy. */
+    fun requestClearClipboard() {
+        java.io.File(appContext.filesDir, CLIPBOARD_FILE).delete()
+        sp.edit().putLong(KEY_CLEAR_CLIPBOARD, System.currentTimeMillis()).apply()
+    }
+
     /**
      * Deletes the learned words. The keyboard may hold them in memory, so it also gets a signal
      * through [KEY_FORGET] to clear its copy.
@@ -152,6 +166,14 @@ class Prefs(context: Context) {
         const val FILE = "key2fixer"
         const val USER_WORDS_FILE = "user_words.tsv"
         const val KEY_FORGET = "ime_forget_request"
+        const val CLIPBOARD_FILE = "clipboard.tsv"
+        const val KEY_CLIPBOARD_ENABLED = "clipboard_enabled"
+        const val KEY_CLEAR_CLIPBOARD = "clipboard_clear_request"
+
+        /** Speed Key + tap letter defaults: V opens the clipboard history (hold V still pastes). */
+        val DEFAULT_LETTER_TAP: Map<Char, KeyAction> = mapOf(
+            'V' to KeyAction.Builtin(BuiltinAction.CLIPBOARD),
+        )
 
         /** Speed Key + hold letter defaults, like Ctrl shortcuts on a computer. */
         val DEFAULT_LETTER_HOLD: Map<Char, KeyAction> = mapOf(

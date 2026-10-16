@@ -56,7 +56,7 @@
     <string name="speed_tap_alone">When the Speed Key is tapped on its own</string>
     <string name="speed_passthrough">Let the Speed Key through while typing</string>
     <string name="speed_passthrough_summary">Turn on if your keyboard app uses it as Ctrl (e.g. K12KB). Shortcuts then only work outside text fields.</string>
-    <string name="shortcuts_explain">Speed Key + letter runs \"Press\". Speed Key + holding the letter runs \"Hold\". By default, holding C, X, V or A copies, cuts, pastes or selects all text, like Ctrl on a computer.</string>
+    <string name="shortcuts_explain">Speed Key + letter runs \"Press\". Speed Key + holding the letter runs \"Hold\". By default, holding C, X, V or A copies, cuts, pastes or selects all text, like Ctrl on a computer, and a quick Speed Key + V opens the clipboard history.</string>
     <string name="shortcut_letter">Speed Key + %1$c</string>
     <string name="shortcut_unassigned">Not assigned</string>
     <string name="shortcut_summary">Press: %1$s · Hold: %2$s</string>
@@ -93,6 +93,17 @@
     <string name="ime_forget_confirm">Delete every word and word pair the keyboard has learned?</string>
     <string name="strip_hint">Swipe up on the keyboard to pick a word</string>
 
+    <string name="section_clipboard">Clipboard history</string>
+    <string name="clipboard_explain">Keeps what you copy so you can paste it again later. Open it with 📋 next to the word bar or Speed Key + V (holding V still pastes). Tap a clip to paste it, 📌 keeps it for good. Works while KEY2 Predictive Keyboard is your keyboard; copied passwords marked as sensitive are never stored, and nothing leaves the phone.</string>
+    <string name="clipboard_enable">Clipboard history</string>
+    <string name="clipboard_enable_summary">Last 30 copies plus pinned ones. Turning this off deletes the history.</string>
+    <string name="clipboard_clear_all">Clear clipboard history</string>
+    <string name="clipboard_clear_confirm">Delete every saved clip, including pinned ones?</string>
+    <string name="clipboard_title">Clipboard</string>
+    <string name="clipboard_clear">Clear</string>
+    <string name="clipboard_empty">Copied text shows up here. Pinned clips (📌) stay when you tap Clear.</string>
+    <string name="clipboard_disabled">Clipboard history is switched off in KEY2 Keyboard Fixer.</string>
+
     <string name="section_diagnostics">Diagnostics</string>
     <string name="tester_title">Key &amp; keyboard-touch tester</string>
     <string name="tester_summary">See the codes your keys send and the raw keyboard touch events</string>
@@ -115,6 +126,7 @@
     <string name="action_cut">Cut</string>
     <string name="action_paste">Paste</string>
     <string name="action_select_all">Select all</string>
+    <string name="action_clipboard">Clipboard history</string>
     <string name="action_back">Back</string>
     <string name="action_home">Home</string>
     <string name="action_recents">Recent apps</string>
@@ -141,6 +153,7 @@
     <string name="toast_no_app_for_action">No app can do that</string>
     <string name="toast_no_flash">No flashlight found</string>
     <string name="toast_no_text_field">No text field is selected</string>
+    <string name="toast_clipboard_needs_keyboard">Open a text field with KEY2 Predictive Keyboard as your keyboard to use the clipboard</string>
     <string name="toast_reels_on">Keyboard swipe → next video: on</string>
     <string name="toast_reels_off">Keyboard swipe → next video: off</string>
     <string name="toast_unassigned_letter">No shortcut for Speed Key + %1$c yet. Set one in KEY2 Keyboard Fixer.</string>
