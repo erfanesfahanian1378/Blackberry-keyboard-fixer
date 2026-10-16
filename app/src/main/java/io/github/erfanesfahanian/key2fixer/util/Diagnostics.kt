@@ -13,6 +13,26 @@ object Diagnostics {
     @Volatile
     var lastConvenienceHandled = 0L
 
+    /** How the Convenience key was last seen, for the main screen and the key tester. */
+    enum class ConvenienceRoute { KEY_EVENT, ASSIST_PRESS, ASSIST_HOLD }
+
+    @Volatile
+    var lastConvenienceRoute: ConvenienceRoute? = null
+
+    /** Wall-clock time of [lastConvenienceRoute]. */
+    @Volatile
+    var lastConvenienceWallTime = 0L
+
+    /** Increases on every sighting so screens can tell new ones apart. */
+    @Volatile
+    var convenienceSightings = 0
+
+    fun recordConvenience(route: ConvenienceRoute) {
+        lastConvenienceRoute = route
+        lastConvenienceWallTime = System.currentTimeMillis()
+        convenienceSightings++
+    }
+
     /** Short human-readable status of the Reels interception, shown on the main screen. */
     @Volatile
     var reelsStatus: String = ""

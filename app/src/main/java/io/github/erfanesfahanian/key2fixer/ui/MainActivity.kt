@@ -2,12 +2,15 @@ package io.github.erfanesfahanian.key2fixer.ui
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.role.RoleManager
+import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.text.format.DateFormat
 import android.view.KeyEvent
 import android.view.inputmethod.InputMethodManager
 import io.github.erfanesfahanian.key2fixer.BuildConfig
@@ -19,6 +22,7 @@ import io.github.erfanesfahanian.key2fixer.util.Diagnostics
 import io.github.erfanesfahanian.key2fixer.util.HorizontalSwipe
 import io.github.erfanesfahanian.key2fixer.util.Prefs
 import io.github.erfanesfahanian.key2fixer.util.ReelsStyle
+import java.util.Date
 
 class MainActivity : Activity() {
     private lateinit var prefs: Prefs
@@ -51,9 +55,7 @@ class MainActivity : Activity() {
             open(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName")))
         }
         clickRow(getString(R.string.setup_keyboard), { keyboardStatus() }) { onKeyboardRowClicked() }
-        clickRow(getString(R.string.setup_assistant), { getString(R.string.setup_assistant_summary) }) {
-            open(Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS))
-        }
+        clickRow(getString(R.string.setup_assistant), { assistantStatus() }) { openAssistantSettings() }
         note {
             val sdk = Build.VERSION.SDK_INT
             getString(R.string.setup_android_version, Build.VERSION.RELEASE, sdk) +
@@ -102,6 +104,8 @@ class MainActivity : Activity() {
         // ------------------------------------------------------------- convenience key
         section(getString(R.string.section_convenience))
         note { getString(R.string.convenience_explain) }
+        clickRow(getString(R.string.convenience_assistant), { assistantStatus() }) { openAssistantSettings() }
+        note { convenienceSeen() }
         switchRow(getString(R.string.convenience_enable), "", { prefs.convenienceEnabled }) { prefs.convenienceEnabled = it }
         clickRow(getString(R.string.convenience_press), { actionLabel(this@MainActivity, prefs.convenienceTap) }) {
             ActionPicker.show(this@MainActivity, getString(R.string.convenience_press)) { prefs.convenienceTap = it; ui.refresh() }
@@ -142,6 +146,31 @@ class MainActivity : Activity() {
         clickRow(getString(R.string.about_source), { getString(R.string.about_version, BuildConfig.VERSION_NAME) }) {
             open(Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.repo_url))))
         }
+    }
+
+    private fun isAssistant(): Boolean =
+        getSystemService(RoleManager::class.java)?.isRoleHeld(RoleManager.ROLE_ASSISTANT) == true
+
+    private fun assistantStatus(): String =
+        if (isAssistant()) check(true) + getString(R.string.setup_assistant_on)
+        else check(false) + getString(R.string.setup_assistant_off)
+
+    private fun openAssistantSettings() {
+        for (action in listOf(Settings.ACTION_VOICE_INPUT_SETTINGS, Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS)) {
+            try {
+                startActivity(Intent(action))
+                return
+            } catch (e: ActivityNotFoundException) {
+                // try the next settings screen
+            }
+        }
+        open(Intent(Settings.ACTION_SETTINGS))
+    }
+
+    private fun convenienceSeen(): String {
+        val route = Diagnostics.lastConvenienceRoute ?: return getString(R.string.convenience_never_seen)
+        val time = DateFormat.getTimeFormat(this).format(Date(Diagnostics.lastConvenienceWallTime))
+        return getString(R.string.convenience_last_seen, time, routeLabel(this, route))
     }
 
     private fun keyboardStatus(): String {

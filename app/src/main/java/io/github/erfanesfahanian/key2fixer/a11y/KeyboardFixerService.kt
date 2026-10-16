@@ -268,6 +268,7 @@ class KeyboardFixerService : AccessibilityService() {
         val consumed = router.onKey(input, cfg, typing)
         if (consumed && event.keyCode == cfg.convenienceKeyCode) {
             Diagnostics.lastConvenienceHandled = SystemClock.uptimeMillis()
+            if (input.isDown && input.repeatCount == 0) Diagnostics.recordConvenience(Diagnostics.ConvenienceRoute.KEY_EVENT)
         }
         return consumed
     }

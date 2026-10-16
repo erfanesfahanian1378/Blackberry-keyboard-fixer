@@ -1,30 +1,22 @@
 package io.github.erfanesfahanian.key2fixer.ui
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
-import android.os.SystemClock
-import io.github.erfanesfahanian.key2fixer.a11y.KeyboardFixerService
-import io.github.erfanesfahanian.key2fixer.keys.ActionRunner
-import io.github.erfanesfahanian.key2fixer.util.Diagnostics
-import io.github.erfanesfahanian.key2fixer.util.Prefs
+import io.github.erfanesfahanian.key2fixer.keys.ConvenienceFallback
 
 /**
- * Invisible "assistant" activity.
+ * Invisible "digital assistant" entry point for the Convenience key.
  *
- * On LineageOS the KEY2 Convenience key is an ASSIST key, which always launches the default
- * digital assistant. If you pick KEY2 Keyboard Fixer as that assistant, the system lands here:
- * when the accessibility service already handled the press this closes immediately, otherwise
- * it runs the Convenience-key action itself so the key keeps working.
+ * LineageOS sends the KEY2 Convenience key as ASSIST: a press launches the default assistant
+ * (ACTION_ASSIST), a long press starts ACTION_VOICE_ASSIST. Choosing KEY2 Keyboard Fixer as the
+ * digital assistant routes both here, which works even on builds where the key event itself
+ * never reaches apps. See [ConvenienceFallback].
  */
 class AssistActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val handledRecently = SystemClock.uptimeMillis() - Diagnostics.lastConvenienceHandled < 2000
-        if (!handledRecently) {
-            val action = Prefs(this).convenienceTap
-            val service = KeyboardFixerService.instance
-            if (service != null) service.runAction(action) else ActionRunner(applicationContext, null).run(action)
-        }
+        ConvenienceFallback.onSystemAssist(applicationContext, longPress = intent?.action == Intent.ACTION_VOICE_ASSIST)
         finish()
         @Suppress("DEPRECATION")
         overridePendingTransition(0, 0)

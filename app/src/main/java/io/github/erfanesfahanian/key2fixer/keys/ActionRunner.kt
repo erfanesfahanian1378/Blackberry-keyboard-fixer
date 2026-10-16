@@ -7,14 +7,17 @@ import android.content.Intent
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.media.AudioManager
+import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
 import android.provider.MediaStore
 import android.util.Log
 import android.view.KeyEvent
+import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.Toast
 import io.github.erfanesfahanian.key2fixer.R
+import io.github.erfanesfahanian.key2fixer.ime.PredictiveKeyboardService
 import io.github.erfanesfahanian.key2fixer.ui.MainActivity
 import io.github.erfanesfahanian.key2fixer.util.Prefs
 
@@ -45,6 +48,10 @@ class ActionRunner(private val context: Context, private val service: Accessibil
 
     private fun runBuiltin(kind: BuiltinAction) {
         when (kind) {
+            BuiltinAction.COPY -> editText(android.R.id.copy, AccessibilityNodeInfo.ACTION_COPY)
+            BuiltinAction.CUT -> editText(android.R.id.cut, AccessibilityNodeInfo.ACTION_CUT)
+            BuiltinAction.PASTE -> editText(android.R.id.paste, AccessibilityNodeInfo.ACTION_PASTE)
+            BuiltinAction.SELECT_ALL -> editText(android.R.id.selectAll, null)
             BuiltinAction.BACK -> global(AccessibilityService.GLOBAL_ACTION_BACK)
             BuiltinAction.HOME -> global(AccessibilityService.GLOBAL_ACTION_HOME)
             BuiltinAction.RECENTS -> global(AccessibilityService.GLOBAL_ACTION_RECENTS)
@@ -69,6 +76,34 @@ class ActionRunner(private val context: Context, private val service: Accessibil
             }
             BuiltinAction.OPEN_SETTINGS -> startActivity(Intent(context, MainActivity::class.java))
         }
+    }
+
+    /**
+     * Copy / cut / paste / select all in the focused text field. The KEY2 keyboard's own
+     * InputConnection is used when it is the active keyboard (works in browsers and WebViews
+     * too); otherwise the accessibility node of the focused field is used.
+     */
+    private fun editText(menuId: Int, nodeAction: Int?) {
+        if (PredictiveKeyboardService.performEdit(menuId)) return
+        val s = service ?: run {
+            toast(context.getString(R.string.toast_needs_accessibility))
+            return
+        }
+        val node = s.findFocus(AccessibilityNodeInfo.FOCUS_INPUT)
+        if (node == null) {
+            toast(context.getString(R.string.toast_no_text_field))
+            return
+        }
+        val ok = if (nodeAction != null) {
+            node.performAction(nodeAction)
+        } else {
+            val args = Bundle().apply {
+                putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_START_INT, 0)
+                putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_END_INT, node.text?.length ?: 0)
+            }
+            node.performAction(AccessibilityNodeInfo.ACTION_SET_SELECTION, args)
+        }
+        if (!ok) toast(context.getString(R.string.toast_action_failed))
     }
 
     private fun global(action: Int) {

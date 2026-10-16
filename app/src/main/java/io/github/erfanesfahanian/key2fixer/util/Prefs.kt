@@ -56,8 +56,11 @@ class Prefs(context: Context) {
         get() = sp.getBoolean("speed_passthrough_typing", false)
         set(v) = sp.edit().putBoolean("speed_passthrough_typing", v).apply()
 
-    fun letterAction(letter: Char, hold: Boolean): KeyAction =
-        KeyAction.decode(sp.getString(letterKey(letter, hold), null))
+    fun letterAction(letter: Char, hold: Boolean): KeyAction {
+        val key = letterKey(letter, hold)
+        if (!sp.contains(key)) return if (hold) DEFAULT_LETTER_HOLD[letter.uppercaseChar()] ?: KeyAction.None else KeyAction.None
+        return KeyAction.decode(sp.getString(key, null))
+    }
 
     fun setLetterAction(letter: Char, hold: Boolean, action: KeyAction) =
         sp.edit().putString(letterKey(letter, hold), action.encode()).apply()
@@ -149,6 +152,14 @@ class Prefs(context: Context) {
         const val FILE = "key2fixer"
         const val USER_WORDS_FILE = "user_words.tsv"
         const val KEY_FORGET = "ime_forget_request"
+
+        /** Speed Key + hold letter defaults, like Ctrl shortcuts on a computer. */
+        val DEFAULT_LETTER_HOLD: Map<Char, KeyAction> = mapOf(
+            'C' to KeyAction.Builtin(BuiltinAction.COPY),
+            'X' to KeyAction.Builtin(BuiltinAction.CUT),
+            'V' to KeyAction.Builtin(BuiltinAction.PASTE),
+            'A' to KeyAction.Builtin(BuiltinAction.SELECT_ALL),
+        )
 
         /** Apps with full-screen vertical video feeds (Reels, Shorts, TikTok-style). */
         val DEFAULT_REELS_APPS = setOf(
