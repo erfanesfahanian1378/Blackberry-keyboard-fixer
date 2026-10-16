@@ -6,6 +6,11 @@ on:
     tags: ["v*"]
   pull_request:
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Also publish a GitHub Release with this tag, e.g. v1.0.0 (leave empty to only build)"
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -41,9 +46,14 @@ jobs:
           name: Key2KeyboardFixer-apk
           path: out/*.apk
 
-      - name: Publish release (tags only)
-        if: startsWith(github.ref, 'refs/tags/v')
+      # Runs for pushed v* tags, or for a manual run with a release tag (the tag is then
+      # created here, on the commit that was just built).
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && inputs.release_tag != '')
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ inputs.release_tag || github.ref_name }}
+          target_commitish: ${{ github.sha }}
+          name: KEY2 Keyboard Fixer ${{ inputs.release_tag || github.ref_name }}
           files: out/Key2KeyboardFixer.apk
           generate_release_notes: true
