@@ -52,6 +52,8 @@ class ActionRunner(private val context: Context, private val service: Accessibil
             BuiltinAction.CUT -> editText(android.R.id.cut, AccessibilityNodeInfo.ACTION_CUT)
             BuiltinAction.PASTE -> editText(android.R.id.paste, AccessibilityNodeInfo.ACTION_PASTE)
             BuiltinAction.SELECT_ALL -> editText(android.R.id.selectAll, null)
+            BuiltinAction.CLIPBOARD ->
+                if (!PredictiveKeyboardService.toggleClipboard()) toast(context.getString(R.string.toast_clipboard_needs_keyboard))
             BuiltinAction.BACK -> global(AccessibilityService.GLOBAL_ACTION_BACK)
             BuiltinAction.HOME -> global(AccessibilityService.GLOBAL_ACTION_HOME)
             BuiltinAction.RECENTS -> global(AccessibilityService.GLOBAL_ACTION_RECENTS)

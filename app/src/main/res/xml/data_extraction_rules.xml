@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12+: the clipboard history and learned words never leave the phone. -->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="file" path="clipboard.tsv" />
+        <exclude domain="file" path="user_words.tsv" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="file" path="clipboard.tsv" />
+        <exclude domain="file" path="user_words.tsv" />
+    </device-transfer>
+</data-extraction-rules>

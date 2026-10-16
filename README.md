@@ -8,6 +8,7 @@ An Android app that fixes the BlackBerry **KEY2** physical keyboard on **Lineage
 | **Swipe-to-predict** (flick up on the keyboard to insert a suggested word) is gone | A small keyboard (IME) shows BlackBerry-style **three predictions**; swipe up from the left / middle / right part of the keyboard to insert that word. It also moves the cursor with sideways swipes, learns your words, and turns two spaces into ". " |
 | The **Speed Key** (the 3×3-dot key) does nothing | **Speed Key + letter** opens the shortcut you set for that letter from any app, with a second shortcut when you hold the letter (52 shortcuts, like stock BlackBerry) |
 | The **Convenience key** (side "action" button) does nothing | Press / hold / double-press run any action: flashlight, camera, an app, screenshot, play/pause, lock screen, notifications… |
+| No **clipboard history** after switching keyboards | The keyboard keeps your last 30 copies (plus pinned ones). Open it with 📋 or **Speed Key + V** and tap a clip to paste it |
 
 Normal typing is not changed: Alt, Shift, Sym and the `$`/`0` keys still work exactly as the ROM defines them.
 
@@ -66,9 +67,15 @@ adb shell settings put secure accessibility_enabled 1
 - Words are learned only on the phone, never in password or incognito fields. Clear them with *Forget learned words*.
 - English word list (~107k words, from AOSP).
 
+### Clipboard history
+- Open it with the 📋 button next to the word bar, or **Speed Key + tap V** (holding V still pastes). It works in any text field, including URL bars and search boxes.
+- Tap a clip to paste it. 📌 pins a clip so it's kept; ✕ deletes one; **Clear** removes everything except pinned clips. Back or typing closes the panel.
+- It records copies only while **KEY2 Predictive Keyboard** is your keyboard (Android lets only the active keyboard read the clipboard in the background). Clips that password managers mark as sensitive are never stored, and the history is excluded from backups.
+- Turn it off or clear it under **Clipboard history** in the app.
+
 ### Speed Key
 - Assign shortcuts under **Letter shortcuts** (press and hold for each of A–Z).
-- Defaults, like Ctrl on a computer: **Speed Key + hold C / X / V / A = Copy / Cut / Paste / Select all** in the focused text field. These four are also in the action list, so you can put them on any letter, the press or hold slot, or the Convenience key.
+- Defaults, like Ctrl on a computer: **Speed Key + hold C / X / V / A = Copy / Cut / Paste / Select all** in the focused text field, and **Speed Key + tap V = clipboard history**. These are also in the action list, so you can put them on any letter, the press or hold slot, or the Convenience key.
 - If your keyboard app uses the Speed Key as **Ctrl** (e.g. K12KB), turn on *Let the Speed Key through while typing*.
 - If nothing happens, use **Which key is the Speed Key** and press it once. The app learns the code your ROM sends.
 
@@ -103,6 +110,8 @@ app/src/main/java/io/github/erfanesfahanian/key2fixer/
   gesture/TouchpadGeometry.kt    raw touch_keypad coordinates -> keyboard units
   ime/PredictiveKeyboardService.kt  the keyboard (suggestion bar + swipe-up)
   ime/WordPredictor.kt           completion + typo correction + learning (unit tested)
+  ime/ClipboardHistory.kt        clipboard history with pinning (unit tested)
+  ime/ClipboardPanelView.kt      the clipboard panel inside the keyboard
   keys/KeyRouter.kt              Speed Key / Convenience key state machine (unit tested)
   keys/ActionRunner.kt           runs the chosen actions
   ui/…                           settings, shortcut editor, key tester, assist fallback

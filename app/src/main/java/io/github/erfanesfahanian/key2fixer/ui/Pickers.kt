@@ -55,6 +55,7 @@ fun builtinLabel(context: Context, kind: BuiltinAction): String = context.getStr
         BuiltinAction.CUT -> R.string.action_cut
         BuiltinAction.PASTE -> R.string.action_paste
         BuiltinAction.SELECT_ALL -> R.string.action_select_all
+        BuiltinAction.CLIPBOARD -> R.string.action_clipboard
         BuiltinAction.BACK -> R.string.action_back
         BuiltinAction.HOME -> R.string.action_home
         BuiltinAction.RECENTS -> R.string.action_recents

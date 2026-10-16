@@ -138,6 +138,14 @@ class MainActivity : Activity() {
         }
         clickRow(getString(R.string.ime_forget), { "" }) { confirmForget() }
 
+        // ------------------------------------------------------------- clipboard
+        section(getString(R.string.section_clipboard))
+        note { getString(R.string.clipboard_explain) }
+        switchRow(getString(R.string.clipboard_enable), getString(R.string.clipboard_enable_summary), { prefs.clipboardEnabled }) {
+            prefs.clipboardEnabled = it
+        }
+        clickRow(getString(R.string.clipboard_clear_all), { "" }) { confirmClearClipboard() }
+
         // ------------------------------------------------------------- diagnostics
         section(getString(R.string.section_diagnostics))
         clickRow(getString(R.string.tester_title), { getString(R.string.tester_summary) }) {
@@ -234,6 +242,15 @@ class MainActivity : Activity() {
                 d.dismiss()
                 ui.refresh()
             }
+            .show()
+    }
+
+    private fun confirmClearClipboard() {
+        AlertDialog.Builder(this)
+            .setTitle(R.string.clipboard_clear_all)
+            .setMessage(R.string.clipboard_clear_confirm)
+            .setPositiveButton(android.R.string.ok) { _, _ -> prefs.requestClearClipboard() }
+            .setNegativeButton(android.R.string.cancel, null)
             .show()
     }
 
