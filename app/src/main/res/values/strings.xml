@@ -78,7 +78,7 @@
     <string name="convenience_key_code">Which key is the Convenience key</string>
 
     <string name="section_keyboard">Predictive keyboard</string>
-    <string name="keyboard_explain">Shows three word predictions above the keyboard, like BlackBerry. Swipe up from the left, middle or right part of the keyboard to insert that word. Typing itself is unchanged.</string>
+    <string name="keyboard_explain">Shows three word predictions above the keyboard, like BlackBerry. Swipe up from the left, middle or right part of the keyboard to insert that word. Typing itself is unchanged. Swipes only do this while the word bar is on screen; the rest of the time (reading a chat, a feed or a web page) they scroll the app as usual.</string>
     <string name="ime_swipe_select">Swipe up to pick a word</string>
     <string name="ime_swipe_select_summary">Left third → left word, middle → middle word, right → right word</string>
     <string name="ime_horizontal">Left / right swipes while typing</string>

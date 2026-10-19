@@ -77,6 +77,7 @@ class PredictiveKeyboardService : InputMethodService(), ClipboardPanelView.Liste
     private val classifier = SwipeClassifier()
     private val cursorSteps = StepAccumulator(CURSOR_STEP)
     private var gesture = Gesture.NONE
+    private var ownsGesture = false
     private var gestureSlot = 1
     private var lastPadX = 0f
 
@@ -249,7 +250,7 @@ class PredictiveKeyboardService : InputMethodService(), ClipboardPanelView.Liste
             gesture = Gesture.DONE
         }
         if (active && !Diagnostics.keyTesterActive) {
-            if (!isInputViewShown && !showRequested && event.isPrintingKey && event.repeatCount == 0) {
+            if (!isInputViewShown && !showRequested && event.isPrintingKey && event.repeatCount == 0 && hasTextField()) {
                 // The field got focus without asking for a keyboard; bring the bar up now.
                 showRequested = true
                 requestShowSelf(0)
@@ -370,12 +371,16 @@ class PredictiveKeyboardService : InputMethodService(), ClipboardPanelView.Liste
     // ------------------------------------------------------------------ keyboard surface swipes
 
     override fun onGenericMotionEvent(event: MotionEvent): Boolean {
-        if (!active || clipboardOpen || Diagnostics.keyTesterActive || !TouchpadGeometry.isKeyboardTouch(event)) {
-            return super.onGenericMotionEvent(event)
+        if (!TouchpadGeometry.isKeyboardTouch(event)) return super.onGenericMotionEvent(event)
+        // Decide once per touch, when the finger lands, so a swipe is never split between this
+        // keyboard and the app.
+        if (event.actionMasked == MotionEvent.ACTION_DOWN) ownsGesture = shouldTakeSwipes()
+        if (!ownsGesture) return super.onGenericMotionEvent(event) // the app scrolls as usual
+        if (event.actionMasked == MotionEvent.ACTION_UP || event.actionMasked == MotionEvent.ACTION_CANCEL) {
+            ownsGesture = false
         }
         val selectOn = prefs.imeSwipeSelect && isInputViewShown
         val horizontal = prefs.imeHorizontal
-        if (!selectOn && horizontal == HorizontalSwipe.OFF) return super.onGenericMotionEvent(event)
 
         geometry.update(event)
         val x = geometry.x(event.x)
@@ -409,6 +414,15 @@ class PredictiveKeyboardService : InputMethodService(), ClipboardPanelView.Liste
         }
         return true
     }
+
+    /**
+     * Keyboard swipes pick words / move the cursor only while the word bar is on screen, i.e.
+     * while you are typing. Otherwise (reading a chat, a feed or a web page, even if a message
+     * box still has focus) they go to the app, which scrolls as usual.
+     */
+    private fun shouldTakeSwipes(): Boolean =
+        active && isInputViewShown && !clipboardOpen && !Diagnostics.keyTesterActive &&
+            (prefs.imeSwipeSelect || prefs.imeHorizontal != HorizontalSwipe.OFF)
 
     private fun configureThresholds(horizontal: HorizontalSwipe) {
         val level = prefs.imeSwipeLevel

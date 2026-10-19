@@ -64,6 +64,7 @@ adb shell settings put secure accessibility_enabled 1
 - The bar shows up to three words: the best one in the **middle**. Swipe up starting from the left, middle or right part of the keyboard to insert that word plus a space. You can also tap the word.
 - With an empty word, it predicts the **next word** from what you've typed before.
 - Sideways swipes **move the cursor** (hold Shift to select). You can switch this to "swipe left deletes the last word" or turn it off.
+- These keyboard gestures only apply while the word bar is on screen (you're typing). When it's hidden (reading a chat, a feed or a web page, even if the message box still has focus), keyboard swipes scroll the app as usual. Press Back to hide the bar.
 - Words are learned only on the phone, never in password or incognito fields. Clear them with *Forget learned words*.
 - English word list (~107k words, from AOSP).
 
