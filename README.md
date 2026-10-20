@@ -60,6 +60,21 @@ adb shell settings put secure accessibility_enabled 1
 - While a text field is focused (comments, search, DMs), the app hands the keyboard back so you can type and use predictions.
 - Requires **Android 14+** (the API this depends on doesn't exist before that).
 
+### Video shortcuts (Reels, Shorts, TikTok)
+While a full-screen video is on screen in one of your chosen apps (and you're not typing), single keys control it. Every key A–Z and Space can be changed under **Video shortcuts**:
+
+| Key | Default |
+|---|---|
+| hold **P** | 2× speed for as long as you hold it |
+| **C** | open comments |
+| **R** | repost |
+| **L** | like |
+| **S** | share / send |
+| **Space** | pause / play |
+| double tap on the keyboard surface (no key press) | like |
+
+Gestures (pause, like, 2×, next/previous) are played as touches on the video; comments, repost, share and save press the app's own buttons, found by their labels. If an app renames a button, that one key may stop working until the label list is updated.
+
 ### Predictive keyboard
 - The bar shows up to three words: the best one in the **middle**. Swipe up starting from the left, middle or right part of the keyboard to insert that word plus a space. You can also tap the word.
 - With an empty word, it predicts the **next word** from what you've typed before.

@@ -72,6 +72,9 @@ class MainActivity : Activity() {
             startActivity(Intent(this@MainActivity, ReelsAppsActivity::class.java))
         }
         clickRow(getString(R.string.reels_style), { styleLabel(prefs.reelsStyle) }) { pickReelsStyle() }
+        clickRow(getString(R.string.video_title), { getString(R.string.video_summary) }) {
+            startActivity(Intent(this@MainActivity, VideoShortcutsActivity::class.java))
+        }
         seekRow(getString(R.string.swipe_distance), 1, 10, { prefs.reelsSwipeLevel }, { prefs.reelsSwipeLevel = it }) {
             getString(R.string.swipe_distance_value, it)
         }

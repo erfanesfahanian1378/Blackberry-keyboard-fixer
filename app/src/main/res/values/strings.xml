@@ -8,7 +8,7 @@
     <!-- Accessibility service -->
     <string name="a11y_label">KEY2 Keyboard Fixer</string>
     <string name="a11y_summary">Next reel/short on keyboard swipe, Speed Key shortcuts, Convenience key actions.</string>
-    <string name="a11y_description">Fixes the BlackBerry KEY2 keyboard on LineageOS:\n\n• In the apps you choose (Instagram, YouTube, TikTok…), a swipe on the keyboard flips to the next or previous video instead of scrolling half way.\n• Speed Key (3×3 dots) + letter opens your shortcuts, like on BlackBerry\'s software.\n• Convenience key press, hold and double press run actions you pick.\n\nThe service watches key presses and keyboard swipes only to do this, reads which app is in front, and plays touch gestures. It does not collect or send any data.</string>
+    <string name="a11y_description">Fixes the BlackBerry KEY2 keyboard on LineageOS:\n\n• In the apps you choose (Instagram, YouTube, TikTok…), a swipe on the keyboard flips to the next or previous video instead of scrolling half way.\n• Speed Key (3×3 dots) + letter opens your shortcuts, like on BlackBerry\'s software.\n• While a video is on screen in those apps, single keys pause, like, open comments, repost or share, and holding a key plays at 2× speed.\n• Convenience key press, hold and double press run actions you pick.\n\nThe service watches key presses and keyboard swipes only to do this, reads which app is in front, and plays touch gestures. It does not collect or send any data.</string>
 
     <!-- Main screen -->
     <string name="section_setup">Setup</string>
@@ -37,6 +37,23 @@
     <string name="reels_style_smart">Smart: one video per swipe on full-screen video feeds, normal drag elsewhere</string>
     <string name="reels_style_page">Always flip one full page per swipe</string>
     <string name="reels_style_drag">Always replay the swipe as a finger drag</string>
+    <string name="video_title">Video shortcuts</string>
+    <string name="video_summary">Hold P = 2× speed, C = comments, R = repost, L = like, S = share, Space = pause, double tap on the keyboard = like</string>
+    <string name="video_explain">Single keys while a Reel, Short or TikTok is on screen in the apps you chose above (not while typing). Hold a key set to 2× speed for as long as you want fast playback. A light double tap on the keyboard surface (without pressing a key) also works.</string>
+    <string name="video_enable">Video shortcuts</string>
+    <string name="video_double_tap">Double tap on the keyboard</string>
+    <string name="video_keys">Keys</string>
+    <string name="video_key">Key %1$s</string>
+    <string name="video_key_space">Space</string>
+    <string name="video_play_pause">Pause / play</string>
+    <string name="video_like">Like</string>
+    <string name="video_speed_2x">2× speed while held</string>
+    <string name="video_comments">Open comments</string>
+    <string name="video_repost">Repost</string>
+    <string name="video_share">Share / send</string>
+    <string name="video_save">Save</string>
+    <string name="video_next">Next video</string>
+    <string name="video_previous">Previous video</string>
     <string name="reels_horizontal">Left / right swipes too</string>
     <string name="reels_horizontal_summary">Also turn sideways keyboard swipes into screen swipes</string>
     <string name="swipe_distance">Swipe distance</string>

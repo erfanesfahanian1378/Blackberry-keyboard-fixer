@@ -6,6 +6,8 @@ import io.github.erfanesfahanian.key2fixer.keys.BuiltinAction
 import io.github.erfanesfahanian.key2fixer.keys.KeyAction
 import io.github.erfanesfahanian.key2fixer.keys.KeyCodes
 import io.github.erfanesfahanian.key2fixer.keys.KeyConfig
+import io.github.erfanesfahanian.key2fixer.keys.VideoAction
+import io.github.erfanesfahanian.key2fixer.keys.VideoKeys
 
 /** All user settings, in one SharedPreferences file shared by the services and the UI. */
 class Prefs(context: Context) {
@@ -37,6 +39,25 @@ class Prefs(context: Context) {
     var reelsHorizontal: Boolean
         get() = sp.getBoolean("reels_horizontal", false)
         set(v) = sp.edit().putBoolean("reels_horizontal", v).apply()
+
+    // --- Video shortcuts (single keys while a Reel / Short / TikTok is on screen) ---
+    var videoShortcutsEnabled: Boolean
+        get() = sp.getBoolean("video_enabled", true)
+        set(v) = sp.edit().putBoolean("video_enabled", v).apply()
+
+    /** Action for a key slot ("A".."Z" or "SPACE"); unset slots use [VideoKeys.DEFAULTS]. */
+    fun videoAction(slot: String): VideoAction {
+        val key = "video_key_$slot"
+        if (!sp.contains(key)) return VideoKeys.DEFAULTS[slot] ?: VideoAction.NONE
+        return VideoAction.fromCode(sp.getString(key, null))
+    }
+
+    fun setVideoAction(slot: String, action: VideoAction) =
+        sp.edit().putString("video_key_$slot", action.code).apply()
+
+    var videoDoubleTap: VideoAction
+        get() = if (sp.contains("video_double_tap")) VideoAction.fromCode(sp.getString("video_double_tap", null)) else VideoKeys.DEFAULT_DOUBLE_TAP
+        set(v) = sp.edit().putString("video_double_tap", v.code).apply()
 
     // --- Speed Key ---
     var speedEnabled: Boolean

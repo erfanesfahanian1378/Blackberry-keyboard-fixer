@@ -37,6 +37,7 @@ data class KeyConfig(
 object KeyCodes {
     const val A = 29
     const val Z = 54
+    const val SPACE = 62
     const val SHIFT_RIGHT = 60
     const val FUNCTION = 119
     const val CTRL_LEFT = 113

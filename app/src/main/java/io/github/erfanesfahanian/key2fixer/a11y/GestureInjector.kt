@@ -17,6 +17,9 @@ import kotlin.math.abs
  */
 class GestureInjector(private val service: AccessibilityService) {
     private var lastDispatch = 0L
+    private var holdStroke: GestureDescription.StrokeDescription? = null
+    private var holdX = 0f
+    private var holdY = 0f
 
     private fun screenSize(): Point {
         val wm = service.getSystemService(WindowManager::class.java)
@@ -73,14 +76,69 @@ class GestureInjector(private val service: AccessibilityService) {
     /** True if a gesture was dispatched very recently (avoid cancelling it with a new one). */
     fun isBusy(): Boolean = SystemClock.uptimeMillis() - lastDispatch < BUSY_MILLIS
 
+    /** A single tap at a point given as fractions of the screen (pause / play a video). */
+    fun tap(fx: Float, fy: Float): Boolean {
+        val s = screenSize()
+        val stroke = GestureDescription.StrokeDescription(dot(s.x * fx, s.y * fy), 0, TAP_MILLIS)
+        return send(GestureDescription.Builder().addStroke(stroke).build())
+    }
+
+    /** Two quick taps at the same point (likes a Reel, Short or TikTok). */
+    fun doubleTap(fx: Float, fy: Float): Boolean {
+        val s = screenSize()
+        val x = s.x * fx
+        val y = s.y * fy
+        val gesture = GestureDescription.Builder()
+            .addStroke(GestureDescription.StrokeDescription(dot(x, y), 0, TAP_MILLIS))
+            .addStroke(GestureDescription.StrokeDescription(dot(x, y), TAP_MILLIS + DOUBLE_TAP_GAP_MILLIS, TAP_MILLIS))
+            .build()
+        return send(gesture)
+    }
+
+    /**
+     * Puts a finger down and keeps it there until [endHold] (2x speed while holding in Reels,
+     * Shorts and TikTok). The stroke "will continue", so Android leaves the pointer down.
+     */
+    fun beginHold(fx: Float, fy: Float): Boolean {
+        val s = screenSize()
+        holdX = s.x * fx
+        holdY = s.y * fy
+        val stroke = GestureDescription.StrokeDescription(dot(holdX, holdY), 0, HOLD_SEGMENT_MILLIS, true)
+        val sent = send(GestureDescription.Builder().addStroke(stroke).build())
+        holdStroke = if (sent) stroke else null
+        return sent
+    }
+
+    /** Lifts the finger put down by [beginHold]. */
+    fun endHold() {
+        val previous = holdStroke ?: return
+        holdStroke = null
+        val path = Path().apply {
+            moveTo(holdX + 1f, holdY) // continue exactly where the held stroke ended
+            lineTo(holdX, holdY)
+        }
+        val end = previous.continueStroke(path, 0, TAP_MILLIS, false)
+        lastDispatch = SystemClock.uptimeMillis()
+        service.dispatchGesture(GestureDescription.Builder().addStroke(end).build(), null, null)
+    }
+
+    /** A 1-pixel path: Android rejects empty paths, and 1px is far below any touch slop. */
+    private fun dot(x: Float, y: Float) = Path().apply {
+        moveTo(x, y)
+        lineTo(x + 1f, y)
+    }
+
     private fun dispatch(x1: Float, y1: Float, x2: Float, y2: Float, duration: Long): Boolean {
         val path = Path().apply {
             moveTo(x1, y1)
             lineTo(x2, y2)
         }
-        val gesture = GestureDescription.Builder()
-            .addStroke(GestureDescription.StrokeDescription(path, 0, duration))
-            .build()
+        return send(GestureDescription.Builder().addStroke(GestureDescription.StrokeDescription(path, 0, duration)).build())
+    }
+
+    /** Any new gesture cancels a finger still held down by [beginHold]. */
+    private fun send(gesture: GestureDescription): Boolean {
+        holdStroke = null
         lastDispatch = SystemClock.uptimeMillis()
         return service.dispatchGesture(gesture, null, null)
     }
@@ -91,5 +149,8 @@ class GestureInjector(private val service: AccessibilityService) {
         private const val MAX_DRAG_MILLIS = 450L
         private const val BUSY_MILLIS = 220L
         private const val DRAG_GAIN = 1.6f
+        private const val TAP_MILLIS = 40L
+        private const val DOUBLE_TAP_GAP_MILLIS = 90L
+        private const val HOLD_SEGMENT_MILLIS = 300L
     }
 }

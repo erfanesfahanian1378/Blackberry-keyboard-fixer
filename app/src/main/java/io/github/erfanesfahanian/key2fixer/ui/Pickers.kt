@@ -17,6 +17,7 @@ import android.widget.TextView
 import io.github.erfanesfahanian.key2fixer.R
 import io.github.erfanesfahanian.key2fixer.keys.BuiltinAction
 import io.github.erfanesfahanian.key2fixer.keys.KeyAction
+import io.github.erfanesfahanian.key2fixer.keys.VideoAction
 import io.github.erfanesfahanian.key2fixer.util.Diagnostics
 import java.util.concurrent.Executors
 
@@ -74,6 +75,21 @@ fun builtinLabel(context: Context, kind: BuiltinAction): String = context.getStr
         BuiltinAction.VOLUME_PANEL -> R.string.action_volume_panel
         BuiltinAction.TOGGLE_REELS -> R.string.action_toggle_reels
         BuiltinAction.OPEN_SETTINGS -> R.string.action_open_settings
+    },
+)
+
+fun videoActionLabel(context: Context, action: VideoAction): String = context.getString(
+    when (action) {
+        VideoAction.NONE -> R.string.action_none
+        VideoAction.PLAY_PAUSE -> R.string.video_play_pause
+        VideoAction.LIKE -> R.string.video_like
+        VideoAction.SPEED_2X -> R.string.video_speed_2x
+        VideoAction.COMMENTS -> R.string.video_comments
+        VideoAction.REPOST -> R.string.video_repost
+        VideoAction.SHARE -> R.string.video_share
+        VideoAction.SAVE -> R.string.video_save
+        VideoAction.NEXT_VIDEO -> R.string.video_next
+        VideoAction.PREVIOUS_VIDEO -> R.string.video_previous
     },
 )
 

@@ -45,6 +45,9 @@
             android:name=".ui.ReelsAppsActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.VideoShortcutsActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.KeyTesterActivity"
             android:exported="false"
             android:windowSoftInputMode="stateAlwaysHidden" />
